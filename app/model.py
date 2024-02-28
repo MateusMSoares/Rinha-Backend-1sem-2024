@@ -1,5 +1,4 @@
 import psycopg2
-from psycopg2 import sql
 
 class Cliente:
     def __init__(self, id, limite, saldo):
@@ -37,10 +36,20 @@ def tabelas_existem():
 
 print(f"Tabelas existem:  {tabelas_existem()}")
 
+def limpar_banco():
+    with conn.cursor() as cur:
+        # Excluir todas as transações
+        cur.execute("DELETE FROM transacoes")
+        # Atualizar saldo de todos os clientes para zero
+        cur.execute("UPDATE clientes SET saldo = 0")
+
+
 def criar_tabelas():
     if not tabelas_existem():
         with conn.cursor() as cur:
             cur.execute(open("scripts.sql", "r").read())
+    else:
+        limpar_banco()
 
 # Chamar a função para criar as tabelas ao iniciar a aplicação
 criar_tabelas()
